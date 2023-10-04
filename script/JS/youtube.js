@@ -37,8 +37,9 @@ class YoutubeAddons {
                 shortVid.pause();
                 interval = 1/30;
             }
-            
-            shortVid.currentTime += events[e.key] * interval
+            // console.log(shortVid.currentTime, shortVid.duration)    
+            shortVid.currentTime = (shortVid.duration + shortVid.currentTime + events[e.key] * interval) % shortVid.duration
+        
         }
     }
 
