@@ -1,0 +1,47 @@
+{
+    "name": "Test Extension",
+    "icons": {
+        "48": "icon/icon.png",
+        "128": "icon/icon2.png"
+    },
+
+    "description": "The All-In-One extension",
+    "version": "0.1",
+    "manifest_version": 3,
+
+    "background": {
+        "service_worker": "provider/provider.js"
+    },
+
+    "permissions": ["storage", "activeTab", "tabs", "scripting"],
+
+    "action": {
+        "default_popup": "popup/index.html"
+    },
+
+    "options_page": "options/index.html",
+
+    "commands": {
+        "_execute_action": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+O",
+                "mac": "Command+Shift+F"
+            },
+            "description": "Opens Test extension"
+        }
+    },
+
+    "content_scripts": [
+        {
+            "matches": [
+                "https://www.youtube.com/*"
+            ],
+            "css": [
+            ],
+            "js": [
+                "provider/provider.js",
+                "script/JS/youtube.js"
+            ]
+        }
+    ]
+}
