@@ -4,7 +4,7 @@
 # Features
 
 ### Keyboard Shortcuts
-#####Youtube
+##### Youtube
 - ```ArrowLeft/ArrowRight``` skips video by 5 seconds backwards or forward respectively
 - ```Shift+(ArrowLeft/ArrowRight)``` skips video by one frame (1/30 of a second) backwards or forward respectively
 
