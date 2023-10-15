@@ -1,25 +1,31 @@
-function initialiseAll(){
+let provider;
+function initialiseAll() {
     // getting local storage data
-    provider.getData(setSwitchStatus);
+    provider = new Provider(extensionName, () => {
+        eventListeners();
+        setSwitchStatus();
+    });
 }
 
-function eventListeners(){
+function eventListeners() {
     console.log(settings)
-    settings.youtube["status"].addEventListener("click", function(event){
-            provider.userData.youtube.status = !provider.userData.youtube.status;
-            console.log(provider.userData.youtube.status)
+
+    for (const type in settings.youtube) {
+        // let type = s;
+        settings.youtube[type].addEventListener("click", () => {
+            console.log(type)
+            if (type == "status") {
+                provider.userData.youtube.status = !provider.userData.youtube.status;
+                console.log(type, provider.userData.youtube.status);
+            } else {
+                provider.userData.youtube[type].status = !provider.userData.youtube[type].status;
+            }
+
             setSwitchStatus();
             provider.setData();
-    });
-    // themeButton.addEventListener("click", function(event){
-    //     themeButtons[userData.styles.utilData.themeNumber].setAttribute("active", 0);
-    //     if (userData.styles.utilData.themeNumber >= themes.length - 1) userData.styles.utilData.themeNumber = 0;
-    //     else userData.styles.utilData.themeNumber += 1;
-    //     themeButtons[userData.styles.utilData.themeNumber].setAttribute("active", 1);
-    //     setColours();
-    //     provider.setData();
-    //     console.log("change theme: ", userData.styles.utilData.themeNumber);
-    // });
+        });
+    }
+
     resetButton.addEventListener("click", function(event){
         provider.resetData(setSwitchStatus);
         console.log("resetting");
@@ -28,4 +34,3 @@ function eventListeners(){
 }
 // user.clear();
 initialiseAll();
-eventListeners();

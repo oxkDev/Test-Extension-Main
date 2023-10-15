@@ -1,5 +1,5 @@
 html {
-    --background: #0f1c28;
+    --background: #1f252c;
     --translucent: #00000034;
     --translucent-light: #00000021;
     --contrast-translucent: #FFFFFF21;
@@ -15,7 +15,7 @@ html {
 :root {
     --transition: all 0.3s cubic-bezier(0.34, 0.03, 0.39, 1.01);
     --font-sub: lighter 14px "Arial";
-    --font-title: lighter 16px "Open Sans";
+    --font-title: lighter 16px "Helvetica";
     --letter-spacing-title: 1px;
     --letter-spacing-sub: 1.2px;
 }
@@ -43,7 +43,7 @@ div {
     border-radius: 21px;
     width: 200px;
     /* margin: 5px auto; */
-    padding: 10px;
+    padding: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -73,6 +73,12 @@ div {
     background-color: var(--translucent-light);
 }
 
+.groupHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 10px;
+}
 
 div:hover {
     letter-spacing: calc(var(--letter-spacing-sub) + 0.2px);

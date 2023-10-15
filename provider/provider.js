@@ -9,14 +9,28 @@ class UserData {
         try {
             this.youtube = {
                 status: data.youtube.status != undefined ? data.youtube.status : true,
-                interval: data.youtube.interval || 5,
+                short: {
+                    status: data.youtube.short.status != undefined ? data.youtube.short.status : true,
+                    interval: data.youtube.short.interval != undefined ? data.youtube.short.interval : 5,
+                },
+                adSkip: {
+                    status: data.youtube.adSkip.status != undefined ? data.youtube.adSkip.status : true,
+                    auto: data.youtube.adSkip.status != undefined ? data.youtube.adSkip.status : true,
+                }
             }
         } catch(e) {
-            console.log(e)
+            console.log("data missing: reset data")
 
             this.youtube = {
                 status: true,
-                interval: 5,
+                short: {
+                    status: true,
+                    interval: 5,
+                },
+                adSkip: {
+                    status: true,
+                    auto: true
+                }
             }
         }
     }
@@ -28,26 +42,28 @@ class Provider {
         this.name = name;
 
         this.userStorage = chrome.storage;
-        this.dataChange = () => console.log("dataChange Unset");
+        this.dataChange;
 
         this.getData(load);
-        this.userStorage.sync.onChanged.addListener(() => this.getData(this.dataChange))
+        this.userStorage.sync.onChanged.addListener(() => {
+            if (this.dataChange != undefined) this.getData(this.dataChange);
+            else console.log("data changed: dataChange Unset");
+        });
     }
 
     getData(func) {
         this.userStorage.sync.get(this.name, result => {
             console.log("test-extension: ", result);
-            this.userData = result[this.name];
-            if (this.userData){
-                this.userData = new UserData(this.userData)
-                if (func) func();
-                console.log("userData: ", this.userData);
+            let resUserData = result[this.name];
+            if (resUserData){
+                this.userData = new UserData(resUserData);
+                console.log("userData: ", resUserData, this.userData);
             } else {
                 this.userData = new UserData()
                 this.setData();
-                if (func) func();
                 console.log("new userData: ", this.userData);
             }
+            if (func) func();
         });
         return this.userData;
     }
