@@ -1,8 +1,4 @@
-var userData;
-
-var extensionName = "test-extension"
-
-console.log("Provider load: ", extensionName)
+const extensionName = "test-extension";
 
 class UserData {
     constructor(data) {
@@ -37,17 +33,18 @@ class UserData {
 }
 
 class Provider {
-    constructor(name, load) {
+    constructor(name, load = function() {console.log("Loaded data: load unset")}, dataChange = false) {
         this.userData;
         this.name = name;
 
         this.userStorage = chrome.storage;
-        this.dataChange;
+        this.dataChangeEvent = new Event("providerUpdate");
+        this.dataChange = dataChange
 
         this.getData(load);
         this.userStorage.sync.onChanged.addListener(() => {
-            if (this.dataChange != undefined) this.getData(this.dataChange);
-            else console.log("data changed: dataChange Unset");
+            if (this.dataChange) this.getData(() => dispatchEvent(this.dataChangeEvent));
+            else console.log("Data changed: dataChange set to false");
         });
     }
 
@@ -63,7 +60,7 @@ class Provider {
                 this.setData();
                 console.log("new userData: ", this.userData);
             }
-            if (func) func();
+            if (func && typeof(func) == 'function') func();
         });
         return this.userData;
     }
@@ -71,7 +68,7 @@ class Provider {
     resetData(func) {
         this.userData = new UserData();
         this.setData();
-        if (func) func();
+        if (func && typeof(func) == 'function') func();
     }
     
     setData() {

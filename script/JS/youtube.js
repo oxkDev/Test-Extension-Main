@@ -1,17 +1,27 @@
 
 class YoutubeShort {
-    constructor(shortsData) {
-        this.status, this.interval = true, 5;
-        this.update(shortsData);
+    constructor(shortsData, force = true) {
+        this.status = false;
+        this.interval = shortsData.interval;
+
+        this.keydown = this.keydown.bind(this);
         
         this.shortSelectors = ["#shorts-player > div.html5-video-container > video"];
+        
+        this.update(shortsData, force);
     }
 
-    update(data = {status: true, interval: 5}) {
-        this.status = data.status;
-        this.interval = data.interval;
-        if (this.status) document.addEventListener("keydown", (e) => this.keydown(e));
-        else document.removeEventListener("keydown", (e) => this.keydown(e));
+    update(data, force = this.status) {
+        let statusOld = this.status;
+        
+        if (data) {
+            this.interval = data.interval;
+            this.status = data.status && force;
+        }
+        console.log("ytshorts update: ", window.location.pathname.startsWith("/shorts"), this.status)
+
+        if (!this.status || !force || !window.location.pathname.startsWith("/shorts")) removeEventListener("keydown", this.keydown);
+        else if (statusOld != this.status || !data) addEventListener("keydown", this.keydown);   
     }
     
     keydown(e) {
@@ -39,41 +49,43 @@ class YoutubeShort {
 }
 
 class YoutubeAdSkip {
-    constructor(adSkipData) {
-        this.status, this.autoSkip = true, true;
-        
+    constructor(adSkipData, force = true) {
+        this.status = false;
+        this.autoSkip = false;
         this.adSelectors = ["div.ad-created.ad-showing video.video-stream.html5-main-video"];
         
-        this.oldLink = window.location.href;
-        this.linkChange;
+        this.keydown = this.keydown.bind(this);
+        this.skipAd = this.skipAd.bind(this);
 
-        this.update(adSkipData);
+        this.adSkipInterval;
+
+        this.update(adSkipData, force);
     }
 
-    update(data) {
-        this.status = data.status;
-        this.autoSkip = data.auto;
 
-        if (!this.status) {
-            document.removeEventListener("load", () => this.skipAd());
-            document.removeEventListener("keydown", (e) => this.keydown(e));
-        } else {
-            document.addEventListener("keydown", (e) => this.keydown(e));
-            if (this.autoSkip) {
+    update(data, force = this.status) {
+        let statusOld = this.status;
+        
+        if (data) {
+            this.status = data.status && force;
+            this.autoSkip = data.auto;
+        }
+        console.log("ytAds update: ", window.location.pathname.startsWith("/watch"), this.status);
+
+        if (this.status && force && window.location.pathname.startsWith("/watch")) {
+            if (this.status != statusOld || !data) addEventListener("keydown", this.keydown);
+            
+            if (this.auto) {
                 console.log("autoskip enabled");
-                this.skipAd();
-                this.linkChange = setInterval(() => {
-                    // if (this.oldLink != window.location.href && window.location.pathname == "/watch") {
-                    //     console.log("video watch");
-                    //     window.location.reload();
-                    //     // this.skipAd();
-                    // }
-                    // this.oldLink = window.location.href
-                    if (window.location.pathname == "/watch") this.skipAd();
-                }, 500);
+                if (!this.adSkipInterval) this.adSkipInterval = setInterval(this.skipAd, 250);
             } else {
-                clearInterval(this.linkChange);
+                clearInterval(this.adSkipInterval);
+                this.adSkipInterval = false;
             }
+        } else {
+            removeEventListener("keydown", this.keydown);
+            clearInterval(this.adSkipInterval);
+            this.adSkipInterval = false;
         }
     }
     
@@ -97,9 +109,8 @@ class YoutubeAdSkip {
             if (skipButton) skipButton.click();
             else {
                 adVid.currentTime = adVid.duration;
-                adVid.oncanplay = null;
                 setTimeout(() => {
-                    adVid.oncanplay = () => this.skipAd();
+                    adVid.addEventListener("canplay", this.skipAd, {once: true});
                 }, 100);
             }
         }
@@ -110,43 +121,20 @@ class YoutubeAdSkip {
 class YoutubeAddons {
     constructor(ytData) {
         this.status = ytData.status;
-        this.Short = new YoutubeShort(ytData.short);
-        this.AdSkip = new YoutubeAdSkip(ytData.adSkip);
+        this.Short = new YoutubeShort(ytData.short, this.status);
+        this.AdSkip = new YoutubeAdSkip(ytData.adSkip, this.status);
 
         this.sortsSelectors = ["#shorts-player > div.html5-video-container > video"];
 
-        if (!this.status) {
-            this.Short.status = false;
-            this.AdSkip.status = false;
-        }
+        addEventListener("load", () => this.update());
 
-        console.log("init yt addons");
+        console.log("init yt addons: ", this.status, this.Short, this.AdSkip);
     }
 
-
-    update(ytData) {
+    update(ytData = {status: this.status, short: false, adSkip: false}) {
         this.status = ytData.status;
         
-        this.Short.update(ytData.short);
-        this.AdSkip.update(ytData.adSkip);
-
-        if (!this.status) {
-            this.Short.status = false;
-            this.AdSkip.status = false;
-        }
-
-    }
-}
-
-window.onload = () => {
-    if (window.location.href.indexOf("www.youtube.com") + 1) {
-        let addon;
-        var provider = new Provider(extensionName, () => {
-            addon = new YoutubeAddons(provider.userData.youtube)
-            provider.dataChange = function(e) {
-                addon.update(provider.userData.youtube);
-            }
-        });
-        
+        this.Short.update(ytData.short, this.status);
+        this.AdSkip.update(ytData.adSkip, this.status);
     }
 }

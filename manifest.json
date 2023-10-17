@@ -40,7 +40,8 @@
             ],
             "js": [
                 "provider/provider.js",
-                "script/JS/youtube.js"
+                "script/JS/youtube.js",
+                "script/JS/main.js"
             ]
         }
     ]
