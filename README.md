@@ -1,11 +1,12 @@
-# Whatsapp-Extension
-> This is an all-in-oue extension on **chromium web browsers**
+# Test-Extension
+> This is an all-in-one extension on **chromium web browsers**
 
 # Features
 
 ### Keyboard Shortcuts
 ##### Youtube
-- ```ArrowLeft/ArrowRight``` skips video by 5 seconds backwards or forward respectively
+- ```ArrowRight``` skips playing advertisements in videos
+- ```ArrowLeft/ArrowRight``` (in shorts) skips video by 5 seconds backwards or forward respectively
 - ```Shift+(ArrowLeft/ArrowRight)``` skips video by one frame (1/30 of a second) backwards or forward respectively
 
 # DISCLAIMER
