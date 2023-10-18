@@ -1,15 +1,18 @@
 html {
-    --background: #1f252c;
-    --translucent: #00000034;
-    --translucent-light: #00000021;
-    --contrast-translucent: #FFFFFF21;
-    --contrast-translucent-light: #FFFFFF15;
+    --background: #0e1e25;
+    --translucent: #00000038;
+    --translucent-light: #00000027;
+    --contrast-translucent: #ffffff21;
+    --contrast-translucent-light: #ffffff13;
     --theme-primary-lighter: #6ab4de;
-    --theme-primary: #4889af;
-    --theme-primary-darker: #1e4358;
+    --theme-primary: #3e7494;
+    --theme-primary-darker: #26546e;
     --theme-secondary: #14566d;
     --text: #cfddeab1;
     --text-contrast: #cbcccd;
+
+    --yt-red-light: #FF0000;
+    --yt-red: #bb2222;
 }
 
 :root {
@@ -20,13 +23,13 @@ html {
     --letter-spacing-sub: 1.2px;
 }
 
-html {
+html * {
     margin: 0;
 }
 
 body {
     background-color: var(--background);
-    padding: 0px;
+    padding: 5px;
     user-select: none;
     transition: var(--transition);
 }
@@ -36,6 +39,18 @@ body * {
 
 div {
     letter-spacing: var(--letter-spacing-title);
+}
+
+a {
+    text-decoration: none;
+}
+
+#title {
+    color: var(--text);
+    font: 100 20px "Helvetica";
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin: 10px;
 }
 
 .field {
@@ -80,6 +95,10 @@ div {
     padding-bottom: 10px;
 }
 
+.group.disabled .field {
+    opacity: 0.5;
+}
+
 div:hover {
     letter-spacing: calc(var(--letter-spacing-sub) + 0.2px);
 }
@@ -120,10 +139,15 @@ div:hover {
     left: 20px;
 }
 
+#youtube .switch.enabled {
+    background-color: var(--yt-red);
+}
+
+
 .mainButton {
     border-radius: 21px;
     /* width: 200px; */
-    margin: 5px 5px 10px 5px;
+    margin: 10px 5px 5px 5px;
     padding: 10px;
     color: var(--text);
     background-color: var(--theme-primary-darker);

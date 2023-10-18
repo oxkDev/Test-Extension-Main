@@ -11,7 +11,6 @@ function eventListeners() {
     console.log(settings)
 
     for (const type in settings.youtube) {
-        // let type = s;
         settings.youtube[type].addEventListener("click", () => {
             console.log(type)
             if (type == "status") {
@@ -26,11 +25,13 @@ function eventListeners() {
         });
     }
 
-    resetButton.addEventListener("click", function(event){
+    buttons.reset.addEventListener("click", function(event){
         provider.resetData(setSwitchStatus);
         console.log("resetting");
         // initialiseAll();
     });
+
+    buttons.updates.addEventListener("click", () => window.open("https://github.com/oxkDev/Test-Extension-Main", "_blank"))
 }
 // user.clear();
 initialiseAll();

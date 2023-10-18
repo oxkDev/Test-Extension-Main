@@ -12,13 +12,13 @@ class YoutubeShort {
     }
 
     update(data, force = this.status) {
-        let statusOld = this.status;
+        const statusOld = this.status;
         
         if (data) {
             this.interval = data.interval;
             this.status = data.status && force;
         }
-        console.log("ytshorts update: ", window.location.pathname.startsWith("/shorts"), this.status)
+        console.log("ytshorts update(old, new, force, dat): ", statusOld, this.status, force, data)
 
         if (!this.status || !force || !window.location.pathname.startsWith("/shorts")) removeEventListener("keydown", this.keydown);
         else if (statusOld != this.status || !data) addEventListener("keydown", this.keydown);   
@@ -26,7 +26,7 @@ class YoutubeShort {
     
     keydown(e) {
         let i = 0;
-        var shortVid;
+        let shortVid;
         
         while (!shortVid && i < this.shortSelectors.length) {
             shortVid = document.querySelector(this.shortSelectors[i]);
@@ -57,25 +57,25 @@ class YoutubeAdSkip {
         this.keydown = this.keydown.bind(this);
         this.skipAd = this.skipAd.bind(this);
 
-        this.adSkipInterval;
+        this.adSkipInterval = false;
 
         this.update(adSkipData, force);
     }
 
 
     update(data, force = this.status) {
-        let statusOld = this.status;
+        const statusOld = this.status;
         
         if (data) {
             this.status = data.status && force;
             this.autoSkip = data.auto;
         }
-        console.log("ytAds update: ", window.location.pathname.startsWith("/watch"), this.status);
+        console.log("ytAds update (old, new, force, dat): ", statusOld, this.status, force, data);
 
         if (this.status && force && window.location.pathname.startsWith("/watch")) {
             if (this.status != statusOld || !data) addEventListener("keydown", this.keydown);
             
-            if (this.auto) {
+            if (this.autoSkip) {
                 console.log("autoskip enabled");
                 if (!this.adSkipInterval) this.adSkipInterval = setInterval(this.skipAd, 250);
             } else {
@@ -109,9 +109,7 @@ class YoutubeAdSkip {
             if (skipButton) skipButton.click();
             else {
                 adVid.currentTime = adVid.duration;
-                setTimeout(() => {
-                    adVid.addEventListener("canplay", this.skipAd, {once: true});
-                }, 100);
+                setTimeout(() => adVid.addEventListener("canplay", () => {console.log("repeat"); this.skipAd()}, {once: true}), 50);
             }
         }
         // else console.log("no ad detected")

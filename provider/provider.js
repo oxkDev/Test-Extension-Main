@@ -1,21 +1,25 @@
 const extensionName = "test-extension";
 
+function ifUndefined(value, defaultValue) {
+    return value != undefined ? value : defaultValue
+}
+
 class UserData {
     constructor(data) {
         try {
             this.youtube = {
-                status: data.youtube.status != undefined ? data.youtube.status : true,
+                status: ifUndefined(data.youtube.status, true),
                 short: {
-                    status: data.youtube.short.status != undefined ? data.youtube.short.status : true,
-                    interval: data.youtube.short.interval != undefined ? data.youtube.short.interval : 5,
+                    status: ifUndefined(data.youtube.short.status, true),
+                    interval: ifUndefined(data.youtube.short.interval, 5),
                 },
                 adSkip: {
-                    status: data.youtube.adSkip.status != undefined ? data.youtube.adSkip.status : true,
-                    auto: data.youtube.adSkip.status != undefined ? data.youtube.adSkip.status : true,
+                    status: ifUndefined(data.youtube.adSkip.status, true),
+                    auto: ifUndefined(data.youtube.adSkip.status, true),
                 }
             }
         } catch(e) {
-            console.log("data missing: reset data")
+            console.log("data.youtube missing: reset data")
 
             this.youtube = {
                 status: true,

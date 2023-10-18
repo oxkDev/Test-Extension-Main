@@ -1,5 +1,9 @@
 var colourVariables;
 
+const groups = {
+    youtube: document.querySelector("div#youtube.group")
+}
+
 const settings = {
     youtube: {
         status: document.querySelector("div#youtube .groupHeader > #status.switch"),
@@ -8,7 +12,10 @@ const settings = {
     },
 }
 
-var resetButton = document.querySelector("div#reset.mainButton");
+const buttons = {
+    reset: document.querySelector("div#reset.mainButton"),
+    updates: document.querySelector("div#updates"),
+}
 
 function setSwitchStatus() {
     console.log(`setSwitchStatus():`, provider.userData);
@@ -17,6 +24,7 @@ function setSwitchStatus() {
             let value;
             if (type == "status") {
                 value = provider.userData.youtube.status;
+                groups.youtube.classList.toggle("disabled", !value)
             } else {
                 value = provider.userData.youtube[type].status;
             }

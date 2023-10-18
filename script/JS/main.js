@@ -3,7 +3,7 @@ let currentLink = window.location.href
 setInterval(() => {
     if (currentLink != window.location.href) dispatchEvent(new Event("load"));
     currentLink = window.location.href;
-}, 250);
+}, 500);
 
 
 console.log("Provider load: ", extensionName)
