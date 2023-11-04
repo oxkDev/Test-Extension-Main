@@ -18,7 +18,7 @@ html {
 :root {
     --transition: all 0.3s cubic-bezier(0.34, 0.03, 0.39, 1.01);
     --font-sub: lighter 14px "Arial";
-    --font-title: lighter 16px "Helvetica";
+    --font-title: 300 16px "Roboto";
     --letter-spacing-title: 1px;
     --letter-spacing-sub: 1.2px;
 }
@@ -29,7 +29,7 @@ html * {
 
 body {
     background-color: var(--background);
-    padding: 5px;
+    padding: 10px;
     user-select: none;
     transition: var(--transition);
 }
@@ -47,9 +47,9 @@ a {
 
 #title {
     color: var(--text);
-    font: 100 20px "Helvetica";
+    font: 300 20px "Roboto";
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 5px;
     margin: 10px;
 }
 

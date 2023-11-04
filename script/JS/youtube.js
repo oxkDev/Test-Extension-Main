@@ -2,9 +2,10 @@
 class YoutubeShort {
     constructor(shortsData, force = true) {
         this.status = false;
+        this.active = false;
         this.interval = shortsData.interval;
 
-        this.keydown = this.keydown.bind(this);
+        this.shortSkip = this.shortSkip.bind(this);
         
         this.shortSelectors = ["#shorts-player > div.html5-video-container > video"];
         
@@ -18,13 +19,19 @@ class YoutubeShort {
             this.interval = data.interval;
             this.status = data.status && force;
         }
-        console.log("ytshorts update(old, new, force, dat): ", statusOld, this.status, force, data)
+        
+        if (!this.status || !window.location.pathname.startsWith("/shorts")){
+            this.active = false;
+            removeEventListener("keydown", this.shortSkip);
+        } else if (!this.active) {
+            this.active = true;
+            addEventListener("keydown", this.shortSkip);
+        }
 
-        if (!this.status || !force || !window.location.pathname.startsWith("/shorts")) removeEventListener("keydown", this.keydown);
-        else if (statusOld != this.status || !data) addEventListener("keydown", this.keydown);   
+        console.log("ytshorts update (old, new, force, active, dat): ", statusOld, this.status, force, this.active, data);
     }
     
-    keydown(e) {
+    shortSkip(e) {
         let i = 0;
         let shortVid;
         
@@ -41,8 +48,12 @@ class YoutubeShort {
                 shortVid.pause();
                 interval = 1/30;
             }
-            // console.log(shortVid.currentTime, shortVid.duration)    
-            shortVid.currentTime = (shortVid.duration + shortVid.currentTime + events[e.key] * interval) % shortVid.duration;
+            
+            let newTime = (shortVid.currentTime + events[e.key] * interval);
+
+            if (e.key == "ArrowRight" && newTime > shortVid.duration) newTime = 0;
+            // console.log(shortVid.currentTime, shortVid.duration)
+            shortVid.currentTime = (shortVid.duration + newTime) % shortVid.duration;
         
         }
     }
@@ -51,6 +62,7 @@ class YoutubeShort {
 class YoutubeAdSkip {
     constructor(adSkipData, force = true) {
         this.status = false;
+        this.active = false;
         this.autoSkip = false;
         this.adSelectors = ["div.ad-created.ad-showing video.video-stream.html5-main-video"];
         
@@ -70,11 +82,13 @@ class YoutubeAdSkip {
             this.status = data.status && force;
             this.autoSkip = data.auto;
         }
-        console.log("ytAds update (old, new, force, dat): ", statusOld, this.status, force, data);
+        
+        if (this.status && window.location.pathname.startsWith("/watch")) {
+            if (!this.active){
+                this.active = true;
+                addEventListener("keydown", this.keydown);
+            }
 
-        if (this.status && force && window.location.pathname.startsWith("/watch")) {
-            if (this.status != statusOld || !data) addEventListener("keydown", this.keydown);
-            
             if (this.autoSkip) {
                 console.log("autoskip enabled");
                 if (!this.adSkipInterval) this.adSkipInterval = setInterval(this.skipAd, 250);
@@ -85,8 +99,11 @@ class YoutubeAdSkip {
         } else {
             removeEventListener("keydown", this.keydown);
             clearInterval(this.adSkipInterval);
+            this.active = false;
             this.adSkipInterval = false;
         }
+
+        console.log("ytAds update (old, new, force, active, dat): ", statusOld, this.status, force, this.active, data);
     }
     
     keydown(e) {
@@ -108,8 +125,13 @@ class YoutubeAdSkip {
             let skipButton = document.querySelector(".ytp-ad-skip-button.ytp-button");
             if (skipButton) skipButton.click();
             else {
-                adVid.currentTime = adVid.duration;
-                setTimeout(() => adVid.addEventListener("canplay", () => {console.log("repeat"); this.skipAd()}, {once: true}), 50);
+                try{
+                    adVid.currentTime = adVid.duration;
+                }
+                catch(e) {
+                    console.log(adVid, adVid.duration, e);
+                }
+                adVid.addEventListener("ended", () => setTimeout(() => {console.log("repeat"); this.skipAd()}, 50), {once: true});
             }
         }
         // else console.log("no ad detected")
