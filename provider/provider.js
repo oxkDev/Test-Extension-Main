@@ -1,27 +1,13 @@
 const extensionName = "test-extension";
 
-function ifUndefined(value, defaultValue) {
-    return value != undefined ? value : defaultValue
-}
-
 class UserData {
     constructor(data) {
-        try {
-            this.youtube = {
-                status: ifUndefined(data.youtube.status, true),
-                short: {
-                    status: ifUndefined(data.youtube.short.status, true),
-                    interval: ifUndefined(data.youtube.short.interval, 5),
-                },
-                adSkip: {
-                    status: ifUndefined(data.youtube.adSkip.status, true),
-                    auto: ifUndefined(data.youtube.adSkip.status, true),
-                }
-            }
-        } catch(e) {
-            console.log("data.youtube missing: reset data")
+        this.needSet = false;
 
-            this.youtube = {
+        this.youtube;
+
+        this.default = {
+            youtube: {
                 status: true,
                 short: {
                     status: true,
@@ -33,68 +19,90 @@ class UserData {
                 }
             }
         }
+
+        if (data) this.update(data);
+    }
+
+    iterate(def, value) {
+        if (value == undefined) {
+            this.needSet = true;
+            console.log("missing parameter: ", def, value);
+            return def
+        }
+
+        if (typeof(def) == "object") {
+            let obj = {};
+            for (const k in def) {
+                obj[k] = this.iterate(def[k], value[k]);
+            } 
+            return obj;
+        }
+
+        return value
+    }
+
+    update(data) {
+        this.needSet = false;
+        if (!data) {
+            console.log("no data:", data);
+            data = this.default;
+            this.needSet = true;
+        }
+
+        for (const t in this.default) {
+            this[t] = this.iterate(this.default[t], data[t]);
+        }
+
+        return this.needSet;
+    }
+
+    get(name) {
+        let obj = {}
+        for (const t in this.default) {
+            obj[t] = this[t];
+        }
+        
+        if (name) obj[name] = obj;
+        
+        return obj
     }
 }
 
 class Provider {
-    constructor(name, load = function() {console.log("Loaded data: load unset")}, dataChange = false) {
-        this.userData;
+    constructor(name, load = function() {console.log("Loaded data: load unset")}, dataChange = true) {
+        this.userData = new UserData(false);
         this.name = name;
 
         this.userStorage = chrome.storage;
-        this.dataChangeEvent = new Event("providerUpdate");
         this.dataChange = dataChange
 
         this.getData(load);
         this.userStorage.sync.onChanged.addListener(() => {
-            if (this.dataChange) this.getData(() => dispatchEvent(this.dataChangeEvent));
+            if (this.dataChange) this.getData(() => {console.log("providerUpdate: ", this.userData); dispatchEvent(new Event("providerUpdate"))});
             else console.log("Data changed: dataChange set to false");
         });
     }
 
     getData(func) {
         this.userStorage.sync.get(this.name, result => {
-            console.log("test-extension: ", result);
+            console.log(`${this.name}: `, result);
             let resUserData = result[this.name];
-            if (resUserData){
-                this.userData = new UserData(resUserData);
-                console.log("userData: ", resUserData, this.userData);
-            } else {
-                this.userData = new UserData()
-                this.setData();
-                console.log("new userData: ", this.userData);
-            }
+
+            if (this.userData.update(resUserData)) this.setData();
+            console.log("userData: ", resUserData, this.userData);
+            
             if (func && typeof(func) == 'function') func();
         });
         return this.userData;
     }
     
     resetData(func) {
-        this.userData = new UserData();
+        this.userData.update();
         this.setData();
         if (func && typeof(func) == 'function') func();
     }
     
     setData() {
-        var obj = {}
-        obj[this.name] = this.userData;
-        this.userStorage.sync.set(obj);
+        this.userStorage.sync.set(this.userData.get(this.name));
     }
 };
-
-// init
-// provider.getData();
-// function init(){
-//   // getting local storage data
-//   this.userStorage.sync.get("utilities", function (result) {
-//       utilities = result.utilities;
-//       console.log(`present?: ${utilities}`);
-//       if (!utilities){
-//           // this.userStorage.sync.clear;
-//           this.userStorage.sync.set({"utilities": DefaultData});
-//           utilities = DefaultData;
-//           console.log(`create: ${utilities}`);
-//       }
-//       console.log("instalation finished!");
-//   });
-// }

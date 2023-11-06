@@ -4,15 +4,17 @@ function initialiseAll() {
     provider = new Provider(extensionName, () => {
         eventListeners();
         setSwitchStatus();
+
+        addEventListener("providerUpdate", setSwitchStatus);
     });
 }
 
 function eventListeners() {
-    console.log(settings)
+    console.log(settings);
 
     for (const type in settings.youtube) {
         settings.youtube[type].addEventListener("click", () => {
-            console.log(type)
+            // console.log(type)
             if (type == "status") {
                 provider.userData.youtube.status = !provider.userData.youtube.status;
                 console.log(type, provider.userData.youtube.status);
@@ -20,7 +22,7 @@ function eventListeners() {
                 provider.userData.youtube[type].status = !provider.userData.youtube[type].status;
             }
 
-            setSwitchStatus();
+            // setSwitchStatus();
             provider.setData();
         });
     }
@@ -31,7 +33,7 @@ function eventListeners() {
         // initialiseAll();
     });
 
-    buttons.updates.addEventListener("click", () => window.open("https://github.com/oxkDev/Test-Extension-Main", "_blank"))
+    buttons.update.addEventListener("click", () => window.open("https://github.com/oxkDev/Test-Extension-Main", "_blank"))
 }
 // user.clear();
 initialiseAll();

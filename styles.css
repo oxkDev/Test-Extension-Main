@@ -16,7 +16,8 @@ html {
 }
 
 :root {
-    --transition: all 0.3s cubic-bezier(0.34, 0.03, 0.39, 1.01);
+    --transition: all 0.3s cubic-bezier(0.34, 0, 0.39, 1);
+    --transition-fast: all 0.2s cubic-bezier(0.37, 0, 0.31, 1);
     --font-sub: lighter 14px "Arial";
     --font-title: 300 16px "Roboto";
     --letter-spacing-title: 1px;
@@ -25,6 +26,7 @@ html {
 
 html * {
     margin: 0;
+    text-decoration: none;
 }
 
 body {
@@ -39,10 +41,6 @@ body * {
 
 div {
     letter-spacing: var(--letter-spacing-title);
-}
-
-a {
-    text-decoration: none;
 }
 
 #title {
@@ -103,46 +101,55 @@ div:hover {
     letter-spacing: calc(var(--letter-spacing-sub) + 0.2px);
 }
 
+.switch, .switch::before, .switch::after {
+    transition: var(--transition-fast);
+}
+
 .switch {
     display: flex;
-    width: 40px;
-    padding: 4px;
+    width: 48px;
     cursor: pointer;
     border-radius: 14px;
     /* transition: var(--transition); */
-}
-
-.knob {
-    cursor: pointer;
-    width: 20px;
-    height: 20px;
-    border-radius: 10px;
-    transition: var(--transition);
-}
-
-.switch {
     background-color: var(--contrast-translucent);
 }
 
+.switch:not(.enabled)::before, .switch.enabled::after {
+    width: 0px;
+    content: "";
+}
+
+.switch.enabled::before, .switch:not(.enabled)::after {
+    width: 50px;
+    content: "";
+    transition-delay: 100ms;
+}
+
+.switch:not(.enabled):active::after, .switch.enabled:active::before {
+    width: 30px;
+}
+
 .switch > .knob {
+    cursor: pointer;
+    width: 100%;
+    height: 20px;
+    margin: 4px;
+    border-radius: 30px;
     background-color: var(--translucent);
-    position: relative;
-    left: 0px;
+    transition: var(--transition-fast);
+}
+
+.switch:hover > .knob {
+    background-color: var(--translucent-light);
 }
 
 .switch.enabled {
     background-color: var(--theme-primary);
 }
 
-.switch.enabled > .knob {
-    position: relative;
-    left: 20px;
-}
-
 #youtube .switch.enabled {
     background-color: var(--yt-red);
 }
-
 
 .mainButton {
     border-radius: 21px;
@@ -174,6 +181,7 @@ div:hover {
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
+    width: 220px;
 }
 
 .selectorWrap::after {
