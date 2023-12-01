@@ -1,0 +1,19 @@
+{
+    "0.1": {
+        "youtube": {
+            "status": [1, true],
+            "short": {
+                "status": [2, true],
+                "interval": [3, 5]
+            },
+            "adSkip": {
+                "status": [4, true],
+                "auto": [5, true]
+            }
+        },
+        "monkeytype": {
+            "status": [6, true],
+            "wpm": [7, 100]
+        }
+    }
+}

@@ -8,18 +8,32 @@
         <div id="youtube" class="group">
             <div class="groupHeader">
                 YouTube
-                <div id="status" class="switch"><div class="knob"></div></div>
+                <label id="status" class="switch"><div class="knob"></div></label>
             </div>
-            <div id="short" class="field">
-                Shorts
-                <div id="status" class="switch">
-                    <div class="knob"></div>
+            <div class="fieldWrap">
+                <div id="short" class="field">
+                    Shorts
+                    <label id="status" class="switch">
+                        <div class="knob"></div>
+                    </label>
+                </div>
+                <div id="adSkip" class="field">
+                    Ad Skipper
+                    <label id="status" class="switch">
+                        <div class="knob"></div>
+                    </label>
                 </div>
             </div>
-            <div id="adSkipper" class="field">
-                Ad Skipper
-                <div id="status" class="switch">
-                    <div class="knob"></div>
+        </div>
+        <div id="monkeytype" class="group">
+            <div class="groupHeader">
+                monkeytype
+                <label id="status" class="switch"><div class="knob"></div></label>
+            </div>
+            <div class="fieldWrap">
+                <div id="wpm" class="field">
+                    Speed (wpm)
+                    <label class="number"><input id="wpm" placeholder="1-350" inputmode="numeric" type="number" step="10" min="1" max="350"></label>
                 </div>
             </div>
         </div>
@@ -28,7 +42,7 @@
         <a href="https://github.com/oxkDev/Test-Extension-Main"><div id="update" class="mainButton">check for updates</div></a>
         
         <script src="../provider/provider.js"></script>
-        <script src="popup.js"></script>
         <script src="construct.js"></script>
+        <script src="popup.js"></script>
     </body>
 </html>

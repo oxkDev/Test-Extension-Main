@@ -10,7 +10,7 @@
     "manifest_version": 3,
 
     "background": {
-        "service_worker": "provider/provider.js"
+        "service_worker": "provider/service-worker.js"
     },
 
     "permissions": ["storage", "activeTab", "tabs", "scripting"],
@@ -31,16 +31,30 @@
         }
     },
 
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "provider/versions.json"
+            ],
+            "matches": [
+                "https://www.youtube.com/*",
+                "https://monkeytype.com/*"
+            ]
+        }
+    ],
+
     "content_scripts": [
         {
             "matches": [
-                "https://www.youtube.com/*"
+                "https://www.youtube.com/*",
+                "https://monkeytype.com/*"
             ],
             "css": [
             ],
             "js": [
                 "provider/provider.js",
                 "script/JS/youtube.js",
+                "script/JS/monkeytype.js",
                 "script/JS/main.js"
             ]
         }

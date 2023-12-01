@@ -10,14 +10,21 @@ console.log("Provider load: ", extensionName)
 
 window.addEventListener("load", () => {
 
-    let ytAddon;
-    let provider = new Provider(extensionName, () => {
+    let ytAddon, monkeytAddon;
+    const href = window.location.href;
+    let provider = new Provider(() => {
         // youtube load check
-        if (window.location.href.indexOf("www.youtube.com") + 1) {
+        if (href.indexOf("www.youtube.com") > -1) {
             ytAddon = new YoutubeAddons(provider.userData.youtube);
             addEventListener("providerUpdate", () => {ytAddon.update(provider.userData.youtube)});
         }
-    }, true);
+        
+        // monkeytype load check
+        if (href.indexOf("monkeytype.com") > -1) {
+            monkeytAddon = new MonkeytypeCheat(provider.userData.monkeytype);
+            addEventListener("providerUpdate", () => {monkeytAddon.update(provider.userData.monkeytype)});
+        }
+    });
 }, {
     once: true
 });
